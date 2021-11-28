@@ -77,4 +77,4 @@ jobs:
           script: |
             docker pull ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.tag }}
             docker rm -f sb3000-dev
-            docker run -d --name sb3000-dev -p 570:3000 --entrypoint sh ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.tag }} -c 'sleep 3600'
+            docker run -d --name sb3000 -p 580:3000 --entrypoint sh ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.tag }} -c 'sleep 3600'
