@@ -28,9 +28,8 @@ jobs:
       -
         run: npm --version
       -
-        run: echo ${{ secrets.GITHUB_TOKEN }} > token
-      -
-        run: cat token
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
       -
         uses: docker/login-action@v1
         with:
