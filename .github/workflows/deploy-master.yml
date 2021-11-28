@@ -6,8 +6,8 @@ on:
       - 'master'
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  # REGISTRY: ghcr.io
+  # IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   docker:
@@ -73,3 +73,15 @@ jobs:
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+      -
+        name: docker run
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            docker pull ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.sha_short }}
+            docker rm -f sb3000-dev
+            docker run -d --name sb3000-dev -p 570:3000 --entrypoint sh ghcr.io/lipinav/deploy/app:b7f1578 -c 'sleep 3600'
