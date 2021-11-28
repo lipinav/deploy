@@ -2,8 +2,8 @@ name: deploy master to dev env
 
 on:
   push:
-    branches:
-      - 'master'
+    tags:
+      - "v*.*.*"
 
 jobs:
   docker:
@@ -45,12 +45,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       -
-        name: Set outputs
+        name: Get tag version
         id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/v}"
       -
-        name: Echo short SHA
-        run: echo ${{ steps.vars.outputs.sha_short }}
+        name: Echo tag name
+        run: echo ${{ steps.vars.outputs.tag }}
       -
         id: docker_build
         uses: docker/build-push-action@v2
@@ -60,7 +60,7 @@ jobs:
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.sha_short }}
+          tags: ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.tag }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
@@ -75,6 +75,6 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            docker pull ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.sha_short }}
+            docker pull ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.tag }}
             docker rm -f sb3000-dev
-            docker run -d --name sb3000-dev -p 570:3000 --entrypoint sh ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.sha_short }} -c 'sleep 3600'
+            docker run -d --name sb3000-dev -p 570:3000 --entrypoint sh ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.tag }} -c 'sleep 3600'
