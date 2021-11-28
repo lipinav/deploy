@@ -64,7 +64,7 @@ jobs:
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: lipinav/deploy/app:${{ steps.vars.outputs.sha_short }}
+          tags: ghcr.io/lipinav/deploy/app:${{ steps.vars.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       -
